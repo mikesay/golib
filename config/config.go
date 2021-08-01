@@ -4,6 +4,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
@@ -24,11 +25,20 @@ func ParseConfig(configPath string, rawVal interface{}, watchChange bool) error 
 	viper.AddConfigPath(dir)
 	configer := Configers[fileName[1]]
 	parseConfig(rawVal, configer)
-
 	RawValue = rawVal
+
+	if watchChange {
+		go func() {
+			viper.WatchConfig()
+			viper.OnConfigChange(func(in fsnotify.Event) {
+				parseConfig(rawVal, configer)
+			})
+		}()
+	}
 
 	return nil
 }
+
 func parseConfig(rawVal interface{}, configer Config) error {
 	return configer.Unmarshal(rawVal)
 }
