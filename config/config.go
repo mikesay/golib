@@ -14,7 +14,19 @@ import (
 )
 
 var (
-	Configer IConfiger
+	Configer            IConfiger
+	FileConfigerFactory map[string]func(string,
+		string,
+		string,
+		bool,
+		interface{}) IConfiger = make(map[string]func(string, string, string, bool, interface{}) IConfiger)
+
+	RemoteConfigerFactory map[string]func(string,
+		string,
+		string,
+		string,
+		bool,
+		interface{}) IConfiger = make(map[string]func(string, string, string, string, bool, interface{}) IConfiger)
 )
 
 type IConfiger interface {
@@ -163,7 +175,7 @@ func ParseConfig(configPath string, rawVal interface{}, watchChange bool) error 
 			return fmt.Errorf("config type %s is not supported yet", fileExt)
 		}
 
-		Configer = NewYamlConfiger(fileName, fileExt, dir, watchChange, rawVal)
+		Configer = FileConfigerFactory[fileExt](fileName, fileExt, dir, watchChange, rawVal)
 		err = Configer.loadData()
 		if err != nil {
 			return fmt.Errorf("fail to load config file %s: %v", path.Join(dir, file), err)

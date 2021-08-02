@@ -8,7 +8,7 @@ func NewYamlConfiger(configName string,
 	configType string,
 	configPath string,
 	watchChange bool,
-	rawVal interface{}) *YamlConfiger {
+	rawVal interface{}) IConfiger {
 
 	var yamlConfiger *YamlConfiger = new(YamlConfiger)
 	yamlConfiger.WatchChange = watchChange
@@ -18,4 +18,8 @@ func NewYamlConfiger(configName string,
 	yamlConfiger.RawVal = rawVal
 
 	return yamlConfiger
+}
+
+func init() {
+	FileConfigerFactory["yaml"] = NewYamlConfiger
 }
