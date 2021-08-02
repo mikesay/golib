@@ -111,9 +111,12 @@ func (rConfiger *RemoteConfiger) parse() error {
 //    i.e. etcd|http://127.0.0.1:4001|/config/hugo.yaml|yaml. Currently, only etcd, consul, and Google filestore are supported
 func ParseConfig(configPath string, rawVal interface{}, watchChange bool) error {
 	var err error
+	if configPath == "" {
+		return fmt.Errorf("configPath can'be empty")
+	}
 	// First check whether it is remote config
 	var sections []string = strings.Split(configPath, "|")
-	if len(sections) > 0 {
+	if len(sections) > 1 {
 		if len(sections) != 4 {
 			return fmt.Errorf("it looks like a remote config, but the format %s is not correct", configPath)
 		} else {
