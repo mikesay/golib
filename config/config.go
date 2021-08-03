@@ -18,8 +18,9 @@ var (
 	FileConfigerFactory map[string]func(string,
 		string,
 		string,
+		string,
 		bool,
-		interface{}) IConfiger = make(map[string]func(string, string, string, bool, interface{}) IConfiger)
+		interface{}) IConfiger = make(map[string]func(string, string, string, string, bool, interface{}) IConfiger)
 
 	RemoteConfigerFactory map[string]func(string,
 		string,
@@ -46,6 +47,7 @@ func (bConfiger *BaseConfiger) unmarshal() error {
 
 type FileConfiger struct {
 	BaseConfiger
+	ConfigFile string
 	ConfigName string
 	ConfigType string
 	ConfigPath string
@@ -55,6 +57,9 @@ func (fConfiger *FileConfiger) loadData() error {
 	viper.SetConfigName(fConfiger.ConfigName)
 	viper.SetConfigType(fConfiger.ConfigType)
 	viper.AddConfigPath(fConfiger.ConfigPath)
+	if fConfiger.ConfigFile != "" {
+		viper.SetConfigFile(fConfiger.ConfigFile)
+	}
 	return viper.ReadInConfig()
 }
 
@@ -175,7 +180,7 @@ func ParseConfig(configPath string, rawVal interface{}, watchChange bool) error 
 			return fmt.Errorf("config type %s is not supported yet", fileExt)
 		}
 
-		Configer = FileConfigerFactory[fileExt](fileName, fileExt, dir, watchChange, rawVal)
+		Configer = FileConfigerFactory[fileExt](path.Join(dir, file), fileName, fileExt, dir, watchChange, rawVal)
 		err = Configer.loadData()
 		if err != nil {
 			return fmt.Errorf("fail to load config file %s: %v", path.Join(dir, file), err)

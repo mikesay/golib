@@ -4,7 +4,8 @@ type YamlConfiger struct {
 	FileConfiger
 }
 
-func NewYamlConfiger(configName string,
+func NewYamlConfiger(configFile string,
+	configName string,
 	configType string,
 	configPath string,
 	watchChange bool,
@@ -15,6 +16,7 @@ func NewYamlConfiger(configName string,
 	yamlConfiger.ConfigName = configName
 	yamlConfiger.ConfigType = configType
 	yamlConfiger.ConfigPath = configPath
+	yamlConfiger.ConfigFile = configFile
 	yamlConfiger.RawVal = rawVal
 
 	return yamlConfiger
